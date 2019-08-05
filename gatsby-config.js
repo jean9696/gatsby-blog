@@ -1,9 +1,27 @@
-/**
- * Configure your Gatsby site with this file.
- *
- * See: https://www.gatsbyjs.org/docs/gatsby-config/
- */
-
 module.exports = {
-  /* Your site config here */
+  plugins: [
+    {
+      resolve: `gatsby-plugin-alias-imports`,
+      options: {
+        alias: {
+          '@components': 'src/components',
+          '@layouts': 'src/layouts',
+          '@pages': 'src/pages',
+        },
+        extensions: ['ts', 'tsx', 'js'],
+      },
+    },
+    {
+      resolve: `gatsby-plugin-ts`,
+      options: {
+        tsLoader: {
+          logLevel: 'warn',
+        },
+        fileName: `types/graphql-types.ts`,
+        codegen: true,
+        codegenDelay: 250,
+        alwaysCheck: false,
+      },
+    },
+  ],
 }
