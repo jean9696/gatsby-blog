@@ -1,10 +1,9 @@
 import styled from 'styled-components'
 
 export const MainLayoutContainer = styled.main`
+  margin: 64px auto;
+  width: 800px;
   min-height: 100vh;
-  width: 100vw;
 `
 
-export const MainLayoutHeader = styled.nav`
-  height: 300px;
-`
+export const MainLayoutHeader = styled.nav``
