@@ -1,10 +1,13 @@
+import { Link } from 'gatsby'
 import styled from 'styled-components'
 
 import { theme } from '@habx/thunder-ui'
 
 export const BlogLayoutContainer = styled.div`
   margin: 64px auto;
-  width: 800px;
+  padding: 0 32px;
+  max-width: 800px;
+  position: relative;
 `
 
 export const BlogLayoutContent = styled.div`
@@ -63,4 +66,10 @@ export const BlogLayoutDate = styled.h3`
 
 export const BlogLayoutMinutes = styled.p`
   margin-bottom: 32px;
+`
+
+export const BackLink = styled(Link)`
+  position: absolute;
+  left: -16px;
+  top: 8px;
 `

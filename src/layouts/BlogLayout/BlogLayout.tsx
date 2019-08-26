@@ -1,18 +1,19 @@
 import { graphql } from 'gatsby'
 import * as React from 'react'
 
+import { FontIcon } from '@habx/thunder-ui'
+
 import { PostLink } from '@components/atoms'
 
 import Footer from '../Footer'
 
 import {
+  BackLink,
   BlogLayoutContainer,
   BlogLayoutContent,
   BlogLayoutDate,
   BlogLayoutMinutes,
   BlogLayoutTitle,
-  OtherPostContainer,
-  OtherPostLabel,
 } from './BlogLayout.style'
 import { blogLayoutMarkdown } from './types/blogLayoutMarkdown'
 import { OtherPost } from './types/OtherPost'
@@ -26,6 +27,9 @@ const BlogLayout: React.FunctionComponent<{
   return (
     <React.Fragment>
       <BlogLayoutContainer>
+        <BackLink to="/">
+          <FontIcon icon="arrow_back" />
+        </BackLink>
         <BlogLayoutTitle>{frontmatter.title}</BlogLayoutTitle>
         <BlogLayoutDate>{frontmatter.date}</BlogLayoutDate>
         <BlogLayoutMinutes>

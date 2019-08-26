@@ -10,7 +10,7 @@ const MainLayout: React.FunctionComponent = ({ children }) => (
   <React.Fragment>
     <MainLayoutContainer>
       <MainLayoutHeader>
-        <Title>Jean's Blog about JS</Title>
+        <Title>A javascript experience</Title>
       </MainLayoutHeader>
       {children}
     </MainLayoutContainer>

@@ -1,13 +1,28 @@
 ---
 path: "/blog/puppeteer"
 date: "2019-07-04"
-title: "React E2E testing with Puppeteer in CI"
+title: "React E2E testing with Puppeteer in CI - Part 1"
 ---
+
 When we work on a project we want to code **fast**, to be *agile*. Thus, we focus on features, sometime we do refactoring but I confess that tests are often forgotten. However, it comes a time when the codebase is so big that a little change can break the whole application and it can become scary to push new code to production.
 
 A solution could have been testing every single react component in our codebase to reach the goal of 100% of test coverage but we didn’t want to unit test our 1000 components which could change at anytime (remember, we’re agiles 🐇).
 
 The best alternative we’ve found at [habx](https://www.habx.com) has been to integrate puppeteer’s tests in our CI. As Puppeteer is using chrome headless, it’s perfectly working in a docker environment that are available in CI. Thus, our tests are ran every time we push to a branch, for different roles and in **parallel** ! This article will explain how we stabilize this testing process.
+
+
+<table style="width: 500px;margin: 0 auto;">
+   <tbody>
+        <tr>
+            <td style="padding: 0 32px">
+                <img src="./puppeteer.jpg" alt="puppeteer"/>
+            </td>
+            <td style="padding: 0 32px">
+                <img src="./circleci.jpg" alt="circleci"/>
+            </td>
+        </tr>
+    </tbody>
+</table>
 
 # Setting up environments
 
@@ -145,130 +160,7 @@ page.on('pageerror', err => console.log('Page Error: ', err))
 page.on('error', err => console.log('Error: ', err))
 ```
 
-Now we’re good to go !
-
-# Making our life easier
-
-With the previous config we can already test our app properly. We just added small pieces of code in order to help use doing them. Here they are:
-
-## Knowing if we are in test mode
-
-It’s good to know if we’re in test mode to optimize our tests speed. For instance, if you have a modal on which you can click only after the animation of 500ms, your test will either have to wait or fail. We can just tell our app that we are in test mode with puppeteer by adding the following code in the `beforeAll` of our *globalSetup*
-
-```js
-// You can use this function if you want to pass other informations to your app
-const windowSet = (name, value) =>
- page.evaluateOnNewDocument(`
-   Object.defineProperty(window, '${name}', {
-     get() {
-       return '${value}'
-     }
-   })
- `)
-await windowSet('puppeteer', true)
-```
-
-Now in our global style we can add (or anything else if you are not using styled-component)
-
-```js
-
-import { createGlobalStyle, css } from 'styled-components'
-const GlobalStyle = createGlobalStyle`
- ${({ isTest }) =>
-   isTest &&
-   css`
-     * {
-       transition: none !important;
-       animation: none !important;
-     }
-     #_hjRemoteVarsFrame {
-       display: none !important;
-     }
-   `}}
-`
-```
-```jsx
-<GlobalStyle isTest={window.puppeteer} />
-```
-
-## Use directly react-router 
-
-Why changing browser url when we can just use react-router function ?
-To do so we just need to expose react router in our app (if in test mode 😉)
-
-```js
-window.__router__ = this.props.history // react-router history prop
-```
-
-And then in our tests
-
-```js
-export const goTo = async (path) => {
- await page.evaluate(`
-   (function goTo() {
-      if (window.__router__) {
-         window.__router__.push('${path}');
-      } else {
-         setTimeout(goTo, 200);
-      }
-    })()
- `)
-}
-```
-
-## Wait for graphql response
-
-As our app is fetching data on a graphqlAPI, it’s better sometime to wait until we get a response from a mutation before we test if a element is present for exemple. We can check if the response has pass through the network by checking graphql operation name§ 
-
-```js
-export const waitForResponse = (operationName, { variablesProperties = [], timeout } = {}) =>
- new Promise(resolve => {
-   const handleResponse = response => {
-     if (response.status() === 200) {
-       try {
-         const request = JSON.parse(response.request().postData())
-         if (
-           operationName === request.operationName &&
-           variablesProperties.reduce(
-             (context, property) => context && Object.keys(request.variables).includes(property),
-             true
-           )
-         ) {
-           page.removeListener('response', handleResponse)
-           resolve(response)
-           clearTimeout(timeoutHandler)
-         }
-       } catch (e) {}
-     }
-   }
-   const defaultTimeout = timeout || 2000
-   const timeoutHandler = setTimeout(() => {
-     console.info(
-       `Timeout: Unable to fetch response for ${operationName} ${variablesProperties.length > 0 &&
-       `with ${variablesProperties.join(', ')}`} (${defaultTimeout})`
-     )
-     resolve()
-   }, defaultTimeout)
-   page.on('response', handleResponse)
- })
- ```
- 
-## Selectors
- 
-CSS selectors can be hard to write, especially when you use library such as styled-component which generate class names at every build. To simplify that, we add a data attribute called *data-testid* (the same used in [react-testing-library](https://github.com/testing-library/react-testing-library)) and we select our element based on that.
-
-```js
-export const selector = (identifier, { raw = false }= {}) =>
- raw ? identifier : `*[data-testid=${identifier}]`
-```
-
-## Small tests
-
-Since every action of a test can be a failure, our tests are as small as possible in order to be able to know what is really failing and what is still working. We try to break our tests in smaller tests as much as possible.
-
-## Testing for multiple roles
-
-Todo ?
+Now we’re good to go ! You can write your tests with [puppeteer's API](https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md)
 
 # Conclusion
 
