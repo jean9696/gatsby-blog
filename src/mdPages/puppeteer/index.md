@@ -8,7 +8,7 @@ When we work on a project we want to code **fast**, to be *agile*. Thus, we focu
 
 A solution could have been testing every single react component in our codebase to reach the goal of 100% of test coverage but we didn’t want to unit test our 1000 components which could change at anytime (remember, we’re agiles 🐇).
 
-The best alternative we’ve found at [habx](https://www.habx.com) has been to integrate puppeteer’s tests in our CI. As Puppeteer is using chrome headless, it’s perfectly working in a docker environment that are available in CI. Thus, our tests are ran every time we push to a branch, for different roles and in **parallel** ! This article will explain how we stabilize this testing process.
+The best alternative we’ve found at [habx](https://www.habx.com) has been to integrate puppeteer’s tests in our CI. As Puppeteer is using chrome headless, it’s perfectly working in a docker environment that are available in CI. Thus, our tests are ran every time we push to a branch, for different roles and in **parallel** ! Theses articles will explain how we stabilize this testing process.
 
 
 <table style="width: 500px;margin: 0 auto;">

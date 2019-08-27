@@ -14,6 +14,7 @@ export const BlogLayoutContent = styled.div`
   margin-bottom: 16px;
   padding-bottom: 32px;
   border-bottom: solid 1px ${theme.get('neutralLight')};
+  min-height: 80vh;
   strong {
     position: relative;
     &:after {
@@ -43,6 +44,21 @@ export const BlogLayoutContent = styled.div`
   h2,
   h3 {
     margin: 24px 0;
+  }
+  hr {
+    height: 1px;
+    background: #d8dade;
+    border: none;
+    margin: 64px 0;
+  }
+  .gatsby-highlight-code-line {
+    display: block;
+    background: #494949;
+    margin: 0 -1em;
+    padding: 0 1em;
+  }
+  code.language-text {
+    padding: 2px 8px;
   }
 `
 

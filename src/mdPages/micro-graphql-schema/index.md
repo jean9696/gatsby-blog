@@ -1,7 +1,7 @@
 ---
 path: "/blog/micro-graphql-schema"
 date: "2019-08-26"
-title: "Client managing micro Graphql services with Apollo"
+title: "Managing micro GraphQL services with Apollo Client"
 ---
 
 **GraphQL** now takes a big part in the industry as well as **micro-services** architecture which is also becoming a reference. Now, the usual way of dealing with these two ideas is to have a single endpoint where clients can fetch data from different services. However, this requires to have a service that merge all the schemas of the all the micro-services to be able to serve them to the client by one single graphql endpoint.
@@ -31,17 +31,17 @@ In our case, each client is responsible for its data fetching meaning that for e
 - Reduce architecture *cost* 💰
 - Services are totally *standalone* 👍
 
+---------- 
 ## How to manage this architecture client side with Apollo client ?
 
 Apollo client lets us building the `ApolloClient` class with [links](https://www.apollographql.com/docs/link/) and we can **compose** them
+
+
 Then you can use the context of Apollo to redirect your request and specify which service to request.
-
-Like this:
-
 ```js
-const { data, loading } = useQuery(viewerQuery, {
+const { data, loading } = useQuery(catsQuery, {
     context: {
-      api: 'crm',
+      api: 'cats',
     },
   })
 ```
@@ -69,16 +69,16 @@ And we list all of our services
 
 ```js
 const links = {
-    housings: createHttpLink({
-      uri: config.get('api.serviceHousings'),
+    cats: createHttpLink({
+      uri: 'https://cats.fr/graphql',
       credentials: defaultCredentials,
     }),
-    crm: createHttpLink({
-      uri: config.get('api.serviceCRM'),
+    dogs: createHttpLink({
+      uri: 'https://dogs.fr/graphql',
       credentials: defaultCredentials,
     }),
-    projects: createHttpLink({
-      uri: config.get('api.serviceProjects'),
+    monkeys: createHttpLink({
+      uri: 'https://monkeys.fr/graphql',
       credentials: defaultCredentials,
     }),
     ...
@@ -90,6 +90,57 @@ const links = {
     link: buildLinks(links),
     cache: new InMemoryCache(),
   })
+```
+
+
+---------
+
+## Going further
+
+Sometimes all of your services are not in graphql, you still have the legacy **REST** API 😩 <br/>
+In that case, you can use [apollo rest](https://www.apollographql.com/docs/link/links/rest/) combined with what we already had compose ! 🚀
+
+```js
+const createRestLink = ({ uri, credentials }) =>
+  new RestLink({
+    uri,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: credentials,
+    defaultSerializer: (data, headers) => ({
+      body: JSON.stringify(data),
+      headers,
+    }),
+    typePatcher: {},
+  })
+
+```
+
+And we can add in our list
+
+```js
+const links = {
+    cats: createHttpLink({
+      uri: 'https://cats.fr/graphql',
+      credentials: defaultCredentials,
+    }),
+    dogs: createHttpLink({
+      uri: 'https://dogs.fr/graphql',
+      credentials: defaultCredentials,
+    }),
+    monkeys: createHttpLink({
+      uri: 'https://monkeys.fr/graphql',
+      credentials: defaultCredentials,
+    }),
+    // highlight-start
+    donkeys: createRestLink({
+      uri: 'https://donkeys.fr/rest',
+      credentials: defaultCredentials,
+    }),
+    // highlight-end
+    ...
+  }
 ```
 
 ## Conclusion
