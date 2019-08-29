@@ -47,6 +47,8 @@ const { data, loading } = useQuery(catsQuery, {
 ```
 To do so, we created a factory 🏭
 ```js
+import { split } from 'apollo-link'
+
 const buildLinks = links =>
   reduce(
     links,
@@ -68,6 +70,8 @@ const buildLinks = links =>
 And we list all of our services
 
 ```js
+import { createHttpLink } from 'apollo-link-http'
+
 const links = {
     cats: createHttpLink({
       uri: 'https://cats.fr/graphql',
@@ -101,6 +105,8 @@ Sometimes all of your services are not in graphql, you still have the legacy **R
 In that case, you can use [apollo rest](https://www.apollographql.com/docs/link/links/rest/) combined with what we already had compose ! 🚀
 
 ```js
+import { RestLink } from 'apollo-link-rest'
+
 const createRestLink = ({ uri, credentials }) =>
   new RestLink({
     uri,
@@ -120,6 +126,8 @@ const createRestLink = ({ uri, credentials }) =>
 And we can add in our list
 
 ```js
+import { createHttpLink } from 'apollo-link-http'
+
 const links = {
     cats: createHttpLink({
       uri: 'https://cats.fr/graphql',
